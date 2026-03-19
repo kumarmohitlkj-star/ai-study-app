@@ -1,7 +1,28 @@
+const CACHE_NAME = "ai-study-cache-v1";
+
+const FILES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/style.css",
+  "/app.js",
+  "/manifest.json",
+  "/icon.png"
+];
+
+// Install - cache files
 self.addEventListener("install", (event) => {
-  console.log("Service Worker Installed");
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(FILES_TO_CACHE);
+    })
+  );
 });
 
+// Fetch - serve from cache if offline
 self.addEventListener("fetch", (event) => {
-  // basic for now
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
 });
